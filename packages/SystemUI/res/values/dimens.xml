@@ -677,7 +677,7 @@
     <!-- The size of the gesture span needed to activate the "pull" notification expansion -->
     <dimen name="pull_span_min">25dp</dimen>
 
-    <dimen name="qs_corner_radius">28dp</dimen>
+    <dimen name="qs_corner_radius">36dp</dimen>
     <dimen name="qs_tile_height">80dp</dimen>
     <dimen name="qs_tile_margin_horizontal">8dp</dimen>
     <dimen name="qs_tile_margin_vertical">@dimen/qs_tile_margin_horizontal</dimen>
@@ -1225,7 +1225,7 @@
     <dimen name="max_window_blur_radius">23px</dimen>
 
     <!-- Blur radius behind Notification Shade -->
-    <dimen name="max_shade_window_blur_radius">60dp</dimen>
+    <dimen name="max_shade_window_blur_radius">80dp</dimen>
 
     <!-- How much into a DisplayCutout's bounds we can go, on each side -->
     <dimen name="display_cutout_margin_consumption">0px</dimen>
