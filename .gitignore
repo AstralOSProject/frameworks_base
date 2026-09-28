@@ -6,3 +6,6 @@ gen/
 .vscode/
 *.code-workspace
 .gradle/
+
+# Oversized files blocked by GitHub's 100MB limit
+packages/SettingsLib/Spa/gradle/wrapper/gradle-8.11.1-bin.zip
