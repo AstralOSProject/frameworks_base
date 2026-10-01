@@ -321,14 +321,14 @@
     <string name="roamingTextSearching">Searching for Service</string>
 
     <!-- Displayed when WFC registration fails -->
-    <string name="wfcRegErrorTitle">Couldn\u2019t set up Wi\u2011Fi calling</string>
+    <string name="wfcRegErrorTitle">Couldn\u2019t set up Wi-Fi calling</string>
     <!-- WFC Operator Error Messages showed as alerts -->
     <string-array name="wfcOperatorErrorAlertMessages">
         <item>To make calls and send messages over Wi-Fi, first ask your carrier to set up this service. Then turn on Wi-Fi calling again from Settings. (Error code: <xliff:g id="code" example="REG09 - No 911 Address">%1$s</xliff:g>)</item>
     </string-array>
     <!-- WFC Operator Error Messages showed as notifications -->
     <string-array name="wfcOperatorErrorNotificationMessages">
-        <item>Issue registering Wi\u2011Fi calling with your carrier: <xliff:g id="code" example="REG09 - No 911 Address">%1$s</xliff:g></item>
+        <item>Issue registering Wi-Fi calling with your carrier: <xliff:g id="code" example="REG09 - No 911 Address">%1$s</xliff:g></item>
     </string-array>
     <!-- Template for showing mobile network operator name while WFC is active -->
     <string-array name="wfcSpnFormats" translatable="false">
@@ -1777,9 +1777,9 @@
     <string name="permdesc_uwb_ranging">Allow the app to determine relative position between nearby Ultra-Wideband devices</string>
 
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. [CHAR LIMIT=50]-->
-    <string name="permlab_nearby_wifi_devices">interact with nearby Wi\u2011Fi devices</string>
+    <string name="permlab_nearby_wifi_devices">interact with nearby Wi-Fi devices</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. [CHAR LIMIT=140]-->
-    <string name="permdesc_nearby_wifi_devices">Allows the app to advertise, connect, and determine the relative position of nearby Wi\u2011Fi devices</string>
+    <string name="permdesc_nearby_wifi_devices">Allows the app to advertise, connect, and determine the relative position of nearby Wi-Fi devices</string>
 
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. [CHAR LIMIT=50]-->
     <string name="permlab_ranging">determine relative position between nearby devices</string>

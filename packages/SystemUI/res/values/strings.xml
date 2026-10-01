@@ -166,13 +166,13 @@
     <string name="hdmi_cec_set_menu_language_decline">Keep current language</string>
 
     <!-- Button label to share wifi [CHAR_LIMIT=20] -->
-    <string name="share_wifi_button_text">Share Wi\u2011Fi</string>
+    <string name="share_wifi_button_text">Share Wi-Fi</string>
 
     <!-- Title of confirmation dialog for wireless debugging [CHAR LIMIT=NONE] -->
     <string name="wifi_debugging_title">Allow wireless debugging on this network?</string>
 
     <!-- Message of confirmation dialog for wireless debugging [CHAR LIMIT=NONE] -->
-    <string name="wifi_debugging_message">Network Name (SSID)\n<xliff:g id="ssid" example="My wifi">%1$s</xliff:g>\n\nWi\u2011Fi Address (BSSID)\n<xliff:g id="bssid" example="AB:CD:EF:12:34:56">%2$s</xliff:g></string>
+    <string name="wifi_debugging_message">Network Name (SSID)\n<xliff:g id="ssid" example="My wifi">%1$s</xliff:g>\n\nWi-Fi Address (BSSID)\n<xliff:g id="bssid" example="AB:CD:EF:12:34:56">%2$s</xliff:g></string>
 
     <!-- Option to always allow wireless debugging on this network [CHAR LIMIT=NONE] -->
     <string name="wifi_debugging_always">Always allow on this network</string>
@@ -855,7 +855,7 @@
     <!-- QuickSettings: Cast detail panel, text when there are no items [CHAR LIMIT=NONE] -->
     <string name="quick_settings_cast_detail_empty_text">No devices available</string>
     <!-- QuickSettings: Cast unavailable, text when not connected to WiFi or ethernet[CHAR LIMIT=NONE] -->
-    <string name="quick_settings_cast_no_network">No Wi\u2011Fi or Ethernet connection</string>
+    <string name="quick_settings_cast_no_network">No Wi-Fi or Ethernet connection</string>
     <!-- QuickSettings: Brightness dialog title [CHAR LIMIT=NONE] -->
     <string name="quick_settings_brightness_dialog_title">Brightness</string>
     <!-- QuickSettings: Label for the toggle that controls whether display inversion is enabled. [CHAR LIMIT=NONE] -->
@@ -3356,7 +3356,7 @@
     <string name="mobile_data_poor_connection">Poor connection</string>
     <!-- Provider Model:
      Summary indicating that a SIM has no mobile data connection [CHAR LIMIT=50] -->
-    <string name="mobile_data_off_summary">Mobile data won\u0027t auto\u2011connect</string>
+    <string name="mobile_data_off_summary">Mobile data won\u0027t auto-connect</string>
     <!-- Provider Model:
      Summary indicating that a active SIM and no network available [CHAR LIMIT=50] -->
     <string name="mobile_data_no_connection">No connection</string>
@@ -3365,7 +3365,7 @@
     <!-- Provider Model: Summary indicating that no networks available [CHAR LIMIT=50] -->
     <string name="all_network_unavailable">No networks available</string>
     <!-- Provider Model: Panel title text for turning on the Wi-Fi networks. [CHAR LIMIT=40] -->
-    <string name="turn_on_wifi">Wi\u2011Fi</string>
+    <string name="turn_on_wifi">Wi-Fi</string>
     <!-- Provider Model: Panel subtitle for tapping a network to connect to internet. [CHAR LIMIT=60] -->
     <string name="tap_a_network_to_connect">Tap a network to connect</string>
     <!-- Provider Model: Panel subtitle for unlocking screen to view networks. [CHAR LIMIT=60] -->
@@ -3375,13 +3375,13 @@
     <!-- Provider Model: Failure notification for connect -->
     <string name="wifi_failed_connect_message">Failed to connect to network</string>
     <!-- Provider Model: Toast message for when the user selects cellular as the internet provider and Wi-Fi auto-connect is temporarily disabled [CHAR LIMIT=60]-->
-    <string name="wifi_wont_autoconnect_for_now">Wi\u2011Fi won\u2019t auto-connect for now</string>
+    <string name="wifi_wont_autoconnect_for_now">Wi-Fi won\u2019t auto-connect for now</string>
     <!-- Provider Model: Title to see all the networks [CHAR LIMIT=50] -->
     <string name="see_all_networks">See all</string>
     <!-- Summary for warning to disconnect ethernet first then switch to other networks. [CHAR LIMIT=60] -->
     <string name="to_switch_networks_disconnect_ethernet">To switch networks, disconnect ethernet</string>
     <!-- Message to describe "Wi-Fi scan always available feature" when Wi-Fi is off and Wi-Fi scanning is on. [CHAR LIMIT=NONE] -->
-    <string name="wifi_scan_notify_message">To improve device experience, apps and services can still scan for Wi\u2011Fi networks at any time, even when Wi\u2011Fi is off. You can change this in Wi\u2011Fi scanning settings. <annotation id="link">Change</annotation></string>
+    <string name="wifi_scan_notify_message">To improve device experience, apps and services can still scan for Wi-Fi networks at any time, even when Wi-Fi is off. You can change this in Wi-Fi scanning settings. <annotation id="link">Change</annotation></string>
     <!-- Provider Model: Description of the airplane mode button. [CHAR LIMIT=60] -->
     <string name="turn_off_airplane_mode">Turn off airplane mode</string>
 
@@ -3459,7 +3459,7 @@
     <!-- Content description for the location icon in the dream overlay status bar [CHAR LIMIT=NONE] -->
     <string name="dream_overlay_location_active">Location active</string>
     <!-- Content description for the Wi-Fi off icon in the dream overlay status bar [CHAR LIMIT=NONE] -->
-    <string name="dream_overlay_status_bar_wifi_off">Wi\u2011Fi unavailable</string>
+    <string name="dream_overlay_status_bar_wifi_off">Wi-Fi unavailable</string>
     <!-- Content description for the priority mode icon in the dream overlay status bar [CHAR LIMIT=NONE] -->
     <string name="dream_overlay_status_bar_priority_mode">Priority mode</string>
     <!-- Content description for the alarm set icon in the dream overlay status bar [CHAR LIMIT=NONE] -->
