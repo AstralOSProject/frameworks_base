@@ -11158,6 +11158,14 @@ public final class Settings {
         public static final String FLASHLIGHT_ENABLED = "flashlight_enabled";
 
         /**
+         * Whether shaking the device firmly toggles the flashlight.
+         *
+         * @hide
+         */
+        @Readable
+        public static final String ASTRAL_SHAKE_FLASHLIGHT = "astral_shake_flashlight";
+
+        /**
          * Whether or not face unlock is allowed on Keyguard.
          * @hide
          */

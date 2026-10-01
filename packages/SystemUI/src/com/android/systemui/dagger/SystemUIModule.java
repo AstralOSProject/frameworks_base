@@ -146,6 +146,7 @@ import com.android.systemui.statusbar.notification.headsup.HeadsUpManager;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.PolicyModule;
 import com.android.systemui.statusbar.policy.SensitiveNotificationProtectionController;
+import com.android.systemui.statusbar.policy.ShakeFlashlightStartable;
 import com.android.systemui.statusbar.policy.ZenModeController;
 import com.android.systemui.statusbar.policy.dagger.SmartRepliesInflationModule;
 import com.android.systemui.statusbar.policy.dagger.StatusBarPolicyModule;
@@ -445,6 +446,11 @@ public abstract class SystemUIModule {
 
     @Binds
     abstract FgsManagerController bindFgsManagerController(FgsManagerControllerImpl impl);
+
+    @Binds
+    @IntoMap
+    @ClassKey(ShakeFlashlightStartable.class)
+    abstract CoreStartable bindShakeFlashlightStartable(ShakeFlashlightStartable impl);
 
     @Binds
     abstract LargeScreenShadeInterpolator largeScreensShadeInterpolator(
