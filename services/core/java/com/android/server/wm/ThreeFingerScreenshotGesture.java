@@ -19,8 +19,8 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.MotionEvent;
-import android.view.PointerEventListener;
 import android.view.WindowManager;
+import android.view.WindowManagerPolicyConstants.PointerEventListener;
 
 /**
  * Detects a quick three-finger downward swipe anywhere on the display and
