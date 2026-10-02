@@ -80,17 +80,25 @@ class DefaultClockController(
 
     init {
         val parent = FrameLayout(ctx)
+        val smallView =
+            layoutInflater.inflate(R.layout.clock_default_small, parent, false)
+                as AnimatableClockView
+        val largeView =
+            layoutInflater.inflate(R.layout.clock_default_large, parent, false)
+                as AnimatableClockView
+        ClockFont.resolveTypeface(ctx)?.let { typeface ->
+            smallView.typeface = typeface
+            largeView.typeface = typeface
+        }
         smallClock =
             DefaultClockFaceController(
-                layoutInflater.inflate(R.layout.clock_default_small, parent, false)
-                    as AnimatableClockView,
+                smallView,
                 settings?.seedColor,
                 messageBuffers?.smallClockMessageBuffer,
             )
         largeClock =
             LargeClockFaceController(
-                layoutInflater.inflate(R.layout.clock_default_large, parent, false)
-                    as AnimatableClockView,
+                largeView,
                 settings?.seedColor,
                 messageBuffers?.largeClockMessageBuffer,
             )

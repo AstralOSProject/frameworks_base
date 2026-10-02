@@ -69,7 +69,7 @@ class DefaultClockProvider(
             val clockSettings = settings.copy(axes = fontAxes.map { it.toSetting() })
             val typefaceCache =
                 TypefaceCache(buffers.infraMessageBuffer, NUM_CLOCK_FONT_ANIMATION_STEPS) {
-                    FLEX_TYPEFACE
+                    ClockFont.resolveTypeface(ctx) ?: FLEX_TYPEFACE
                 }
             FlexClockController(
                 ClockContext(

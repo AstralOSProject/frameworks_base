@@ -105,6 +105,8 @@ open class ClockRegistry(
 
     private val availableClocks = ConcurrentHashMap<ClockId, ClockInfo>()
     private val clockChangeListeners = mutableListOf<ClockChangeListener>()
+    private val clockFontUri: Uri =
+        Settings.Secure.getUriFor(Settings.Secure.ASTRAL_CLOCK_FONT)
     private val settingObserver =
         object : ContentObserver(null) {
             override fun onChange(
@@ -113,6 +115,9 @@ open class ClockRegistry(
                 flags: Int,
                 userId: Int,
             ) {
+                if (uris.contains(clockFontUri)) {
+                    triggerOnCurrentClockChanged()
+                }
                 scope.launch(bgDispatcher) { querySettings() }
             }
         }
@@ -433,11 +438,22 @@ open class ClockRegistry(
                 settingObserver,
                 UserHandle.USER_ALL,
             )
+            context.contentResolver.registerContentObserver(
+                clockFontUri,
+                /*notifyForDescendants=*/ false,
+                settingObserver,
+                UserHandle.USER_ALL,
+            )
 
             ActivityManager.getService().registerUserSwitchObserver(userSwitchObserver, TAG)
         } else {
             context.contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.LOCK_SCREEN_CUSTOM_CLOCK_FACE),
+                /*notifyForDescendants=*/ false,
+                settingObserver,
+            )
+            context.contentResolver.registerContentObserver(
+                clockFontUri,
                 /*notifyForDescendants=*/ false,
                 settingObserver,
             )

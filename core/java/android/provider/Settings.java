@@ -11166,6 +11166,15 @@ public final class Settings {
         public static final String ASTRAL_SHAKE_FLASHLIGHT = "astral_shake_flashlight";
 
         /**
+         * Font family used by the lockscreen and doze clocks. Empty or unset
+         * means the system default clock font.
+         *
+         * @hide
+         */
+        @Readable
+        public static final String ASTRAL_CLOCK_FONT = "astral_clock_font";
+
+        /**
          * Whether or not face unlock is allowed on Keyguard.
          * @hide
          */
