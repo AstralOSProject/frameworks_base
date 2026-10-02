@@ -11175,6 +11175,15 @@ public final class Settings {
         public static final String ASTRAL_CLOCK_FONT = "astral_clock_font";
 
         /**
+         * Whether a three-finger downward swipe takes a screenshot.
+         *
+         * @hide
+         */
+        @Readable
+        public static final String ASTRAL_THREE_FINGER_SCREENSHOT =
+                "astral_three_finger_screenshot";
+
+        /**
          * Whether or not face unlock is allowed on Keyguard.
          * @hide
          */

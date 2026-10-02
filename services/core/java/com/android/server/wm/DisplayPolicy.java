@@ -229,6 +229,7 @@ public class DisplayPolicy {
 
     // Will be null in client transient mode.
     private SystemGesturesPointerEventListener mSystemGestures;
+    private ThreeFingerScreenshotGesture mThreeFingerScreenshot;
 
     final DecorInsets mDecorInsets;
     /** Currently it can only be non-null when physical display switch happens. */
@@ -605,6 +606,10 @@ public class DisplayPolicy {
             mSystemGestures = new SystemGesturesPointerEventListener(mUiContext, mHandler,
                     gesturesPointerEventCallbacks);
             displayContent.registerPointerEventListener(mSystemGestures);
+        }
+        if (displayContent.isDefaultDisplay) {
+            mThreeFingerScreenshot = new ThreeFingerScreenshotGesture(mContext, this);
+            displayContent.registerPointerEventListener(mThreeFingerScreenshot);
         }
         mAppTransitionListener = new WindowManagerInternal.AppTransitionListener(displayId) {
 
