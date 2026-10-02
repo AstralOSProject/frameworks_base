@@ -24,11 +24,21 @@ import android.provider.Settings
 object ClockFont {
 
     fun currentFamily(context: Context): String {
-        return Settings.Secure.getStringForUser(
-                context.contentResolver,
-                Settings.Secure.ASTRAL_CLOCK_FONT,
-                ActivityManager.getCurrentUser(),
-        ) ?: ""
+        // getCurrentUser() needs INTERACT_ACROSS_USERS, which SystemUI has but
+        // WallpaperPicker2/ThemePicker does not; fall back to the calling
+        // process's own user there (same pattern as ClockRegistry.querySettings).
+        return try {
+            Settings.Secure.getStringForUser(
+                    context.contentResolver,
+                    Settings.Secure.ASTRAL_CLOCK_FONT,
+                    ActivityManager.getCurrentUser(),
+            ) ?: ""
+        } catch (e: SecurityException) {
+            Settings.Secure.getString(
+                    context.contentResolver,
+                    Settings.Secure.ASTRAL_CLOCK_FONT,
+            ) ?: ""
+        }
     }
 
     /**
