@@ -74,6 +74,7 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver {
     protected static final int BATTERY_STYLE_PORTRAIT = 0;
     protected static final int BATTERY_STYLE_CIRCLE = 1;
     protected static final int BATTERY_STYLE_TEXT = 2;
+    protected static final int BATTERY_STYLE_HIDE = 3;
 
     @Retention(SOURCE)
     @IntDef({MODE_DEFAULT, MODE_ON, MODE_OFF, MODE_ESTIMATE})
@@ -147,6 +148,9 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver {
                     getResources().getDimensionPixelSize(
                             R.dimen.status_bar_battery_unified_icon_height));
             addView(mBatteryIconView, mlp);
+            if (getBatteryStyle() == BATTERY_STYLE_HIDE) {
+                mBatteryIconView.setVisibility(View.GONE);
+            }
         } else {
             updateDrawable();
             final MarginLayoutParams mlp = new MarginLayoutParams(
@@ -565,7 +569,8 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver {
         boolean shouldShow =
                 (drawPercentOnly && (!drawPercentInside || isCharging()) ||
                 getBatteryStyle() == BATTERY_STYLE_TEXT);
-        shouldShow = shouldShow && !mBatteryStateUnknown;
+        shouldShow = shouldShow && getBatteryStyle() != BATTERY_STYLE_HIDE
+                && !mBatteryStateUnknown;
 
         setBatteryDrawableState(
                 new BatteryDrawableState(
@@ -597,7 +602,8 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver {
         boolean shouldShow =
                 (drawPercentOnly && (!drawPercentInside || isCharging()) ||
                 getBatteryStyle() == BATTERY_STYLE_TEXT);
-        shouldShow = shouldShow && !mBatteryStateUnknown;
+        shouldShow = shouldShow && getBatteryStyle() != BATTERY_STYLE_HIDE
+                && !mBatteryStateUnknown;
 
         if (shouldShow) {
             mAccessorizedDrawable.showPercent(false);
@@ -739,6 +745,10 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver {
                 mBatteryIconView.setVisibility(View.VISIBLE);
                 break;
             case BATTERY_STYLE_TEXT:
+                mBatteryIconView.setVisibility(View.GONE);
+                mBatteryIconView.setImageDrawable(null);
+                break;
+            case BATTERY_STYLE_HIDE:
                 mBatteryIconView.setVisibility(View.GONE);
                 mBatteryIconView.setImageDrawable(null);
                 break;

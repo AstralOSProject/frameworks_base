@@ -20,6 +20,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
+import android.os.UserHandle
 import android.telephony.CarrierConfigManager
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
@@ -52,11 +56,13 @@ import com.android.systemui.statusbar.pipeline.mobile.data.model.SubscriptionMod
 import com.android.systemui.statusbar.pipeline.mobile.data.repository.MobileConnectionsRepository
 import com.android.systemui.statusbar.pipeline.mobile.util.MobileMappingsProxy
 import com.android.systemui.statusbar.pipeline.mobile.util.SubscriptionManagerProxy
+import com.android.systemui.statusbar.pipeline.mobile.util.readConfigWith4gOverride
 import com.android.systemui.statusbar.pipeline.shared.data.repository.ConnectivityRepository
 import com.android.systemui.statusbar.pipeline.wifi.data.repository.WifiRepository
 import com.android.systemui.statusbar.pipeline.wifi.shared.model.WifiNetworkModel
 import com.android.systemui.util.kotlin.pairwise
 import com.android.systemui.utils.coroutines.flow.conflatedCallbackFlow
+import lineageos.providers.LineageSettings
 import java.io.PrintWriter
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -287,16 +293,32 @@ constructor(
             .broadcastFlow(IntentFilter(CarrierConfigManager.ACTION_CARRIER_CONFIG_CHANGED))
             .onEach { logger.logActionCarrierConfigChanged() }
 
+    private val show4gForLteChanged: Flow<Unit> = conflatedCallbackFlow {
+        val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean) {
+                trySend(Unit)
+            }
+        }
+        context.contentResolver.registerContentObserver(
+            LineageSettings.System.getUriFor(
+                LineageSettings.System.STATUS_BAR_SHOW_4G_FOR_LTE),
+            false,
+            observer,
+            UserHandle.USER_ALL,
+        )
+        awaitClose { context.contentResolver.unregisterContentObserver(observer) }
+    }
+
     override val defaultDataSubRatConfig: StateFlow<Config> =
-        merge(defaultDataSubId, carrierConfigChangedEvent)
+        merge(defaultDataSubId, carrierConfigChangedEvent, show4gForLteChanged)
             .onStart { emit(Unit) }
-            .mapLatest { Config.readConfig(context) }
+            .mapLatest { readConfigWith4gOverride(context) }
             .distinctUntilChanged()
             .onEach { logger.logDefaultDataSubRatConfig(it) }
             .stateIn(
                 scope,
                 SharingStarted.WhileSubscribed(),
-                initialValue = Config.readConfig(context)
+                initialValue = readConfigWith4gOverride(context)
             )
 
     override val defaultMobileIconMapping: Flow<Map<String, MobileIconGroup>> =

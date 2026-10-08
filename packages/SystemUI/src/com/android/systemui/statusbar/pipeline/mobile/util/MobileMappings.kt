@@ -16,12 +16,31 @@
 
 package com.android.systemui.statusbar.pipeline.mobile.util
 
+import android.content.Context
+import android.os.UserHandle
 import android.telephony.Annotation.NetworkType
 import android.telephony.TelephonyDisplayInfo
 import com.android.settingslib.SignalIcon.MobileIconGroup
 import com.android.settingslib.mobile.MobileMappings
 import com.android.settingslib.mobile.MobileMappings.Config
+import lineageos.providers.LineageSettings
 import javax.inject.Inject
+
+/**
+ * Reads the carrier [Config] and additionally honors the Lineage setting to display "4G" instead
+ * of "LTE" for the mobile data icon.
+ */
+fun readConfigWith4gOverride(context: Context): Config {
+    return Config.readConfig(context).apply {
+        if (LineageSettings.System.getIntForUser(
+                context.contentResolver,
+                LineageSettings.System.STATUS_BAR_SHOW_4G_FOR_LTE,
+                0,
+                UserHandle.USER_CURRENT) != 0) {
+            show4gForLte = true
+        }
+    }
+}
 
 /**
  * [MobileMappings] owns the logic on creating the map from [TelephonyDisplayInfo] to

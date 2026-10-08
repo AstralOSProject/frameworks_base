@@ -89,6 +89,7 @@ import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.res.R;
 import com.android.systemui.shade.ShadeDisplayAware;
 import com.android.systemui.statusbar.connectivity.AccessPointController;
+import com.android.systemui.statusbar.pipeline.mobile.util.MobileMappingsKt;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.toast.SystemUIToast;
@@ -312,7 +313,7 @@ public class InternetDialogController implements AccessPointController.AccessPoi
         if (DEBUG) {
             Log.d(TAG, "Init, SubId: " + mDefaultDataSubId);
         }
-        mConfig = MobileMappings.Config.readConfig(mContext);
+        mConfig = MobileMappingsKt.readConfigWith4gOverride(mContext);
         mTelephonyManager = mTelephonyManager.createForSubscriptionId(mDefaultDataSubId);
         mSubIdTelephonyManagerMap.put(mDefaultDataSubId, mTelephonyManager);
         registerInternetTelephonyCallback(mTelephonyManager, mDefaultDataSubId);
@@ -1364,7 +1365,7 @@ public class InternetDialogController implements AccessPointController.AccessPoi
                 if (DEBUG) {
                     Log.d(TAG, "ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED");
                 }
-                mConfig = MobileMappings.Config.readConfig(context);
+                mConfig = MobileMappingsKt.readConfigWith4gOverride(context);
                 refreshHasActiveSubIdOnDds();
                 updateListener();
             } else if (WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION.equals(action)) {

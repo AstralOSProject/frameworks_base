@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.net.ConnectivityManager;
 import android.net.ConnectivityManager.NetworkCallback;
 import android.net.Network;
@@ -37,6 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerExecutor;
 import android.os.Looper;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.telephony.CarrierConfigManager;
 import android.telephony.CellSignalStrength;
@@ -75,6 +77,7 @@ import com.android.systemui.qs.tiles.dialog.InternetDialogManager;
 import com.android.systemui.res.R;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.pipeline.StatusBarPipelineFlags;
+import com.android.systemui.statusbar.pipeline.mobile.util.MobileMappingsKt;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.DataSaverController;
 import com.android.systemui.statusbar.policy.DataSaverControllerImpl;
@@ -82,6 +85,8 @@ import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController.DeviceProvisionedListener;
 import com.android.systemui.telephony.TelephonyListenerManager;
 import com.android.systemui.util.CarrierConfigTracker;
+
+import lineageos.providers.LineageSettings;
 
 import dalvik.annotation.optimization.NeverCompile;
 
@@ -184,6 +189,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
     private int mCurrentUserId;
 
     private OnSubscriptionsChangedListener mSubscriptionListener;
+    private ContentObserver mShow4gForLteObserver;
     private NetworkCapabilities mLastDefaultNetworkCapabilities;
     // Handler that all broadcasts are received on.
     private final Handler mReceiverHandler;
@@ -208,7 +214,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
             new ConfigurationController.ConfigurationListener() {
                 @Override
                 public void onConfigChanged(Configuration newConfig) {
-                    mConfig = Config.readConfig(mContext);
+                    mConfig = MobileMappingsKt.readConfigWith4gOverride(mContext);
                     mReceiverHandler.post(() -> handleConfigurationChanged());
                 }
             };
@@ -253,7 +259,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 telephonyListenerManager,
                 wifiManager,
                 subscriptionManager,
-                Config.readConfig(context),
+                MobileMappingsKt.readConfigWith4gOverride(context),
                 bgLooper,
                 bgExecutor,
                 callbackHandler,
@@ -521,6 +527,24 @@ public class NetworkControllerImpl extends BroadcastReceiver
         filter.addAction(TelephonyManager.ACTION_SUBSCRIPTION_CARRIER_IDENTITY_CHANGED);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mBroadcastDispatcher.registerReceiverWithHandler(this, filter, mReceiverHandler);
+
+        if (mShow4gForLteObserver == null) {
+            mShow4gForLteObserver = new ContentObserver(mReceiverHandler) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    mConfig = MobileMappingsKt.readConfigWith4gOverride(mContext);
+                    mReceiverHandler.post(
+                            NetworkControllerImpl.this::handleConfigurationChanged);
+                }
+            };
+        }
+        mContext.getContentResolver().registerContentObserver(
+                LineageSettings.System.getUriFor(
+                        LineageSettings.System.STATUS_BAR_SHOW_4G_FOR_LTE),
+                false,
+                mShow4gForLteObserver,
+                UserHandle.USER_ALL);
+
         mListening = true;
 
         // Initial setup of connectivity. Handled as if we had received a sticky broadcast of
@@ -555,6 +579,9 @@ public class NetworkControllerImpl extends BroadcastReceiver
             mobileSignalController.unregisterListener();
         }
         mSubscriptionManager.removeOnSubscriptionsChangedListener(mSubscriptionListener);
+        if (mShow4gForLteObserver != null) {
+            mContext.getContentResolver().unregisterContentObserver(mShow4gForLteObserver);
+        }
         mBroadcastDispatcher.unregisterReceiver(this);
     }
 
@@ -795,7 +822,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
                     MobileSignalController controller = mMobileSignalControllers.valueAt(i);
                     controller.handleBroadcast(intent);
                 }
-                mConfig = Config.readConfig(mContext);
+                mConfig = MobileMappingsKt.readConfigWith4gOverride(mContext);
                 mReceiverHandler.post(this::handleConfigurationChanged);
                 break;
 
@@ -829,7 +856,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 }
                 break;
             case CarrierConfigManager.ACTION_CARRIER_CONFIG_CHANGED:
-                mConfig = Config.readConfig(mContext);
+                mConfig = MobileMappingsKt.readConfigWith4gOverride(mContext);
                 mReceiverHandler.post(this::handleConfigurationChanged);
                 break;
             case Settings.Panel.ACTION_INTERNET_CONNECTIVITY:
