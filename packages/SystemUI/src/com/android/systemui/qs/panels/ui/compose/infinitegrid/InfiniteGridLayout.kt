@@ -115,7 +115,7 @@ constructor(
                     } else {
                         TileHeight
                     },
-                modifier = Modifier.element(it.tile.spec.toElementKey(spanIndex)),
+                modifier = Modifier.element(it.tile.spec.toElementKey()),
                 squishiness = { squishiness },
                 tileHapticsViewModelFactoryProvider = tileHapticsViewModelFactoryProvider,
                 coroutineScope = scope,

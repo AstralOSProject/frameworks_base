@@ -140,7 +140,12 @@ fun Tile(
         }
 
     // TODO(b/361789146): Draw the shapes instead of clipping
-    val tileShape = TileDefaults.animateTileShape(uiState.state, iconOnly)
+    val tileShape =
+        TileDefaults.animateTileShape(
+            uiState.state,
+            iconOnly,
+            keepActiveShape = tileHeight > TileHeight,
+        )
     val animatedColor by animateColorAsState(colors.background, label = "QSTileBackgroundColor")
 
     TileExpandable(
@@ -454,9 +459,13 @@ private object TileDefaults {
     }
 
     @Composable
-    fun animateTileShape(state: Int, iconOnly: Boolean = false): RoundedCornerShape {
+    fun animateTileShape(
+        state: Int,
+        iconOnly: Boolean = false,
+        keepActiveShape: Boolean = false,
+    ): RoundedCornerShape {
         return animateShape(
-            state = state,
+            state = if (keepActiveShape) STATE_ACTIVE else state,
             activeCornerRadius = if (iconOnly) InactiveCornerRadius else ActiveTileCornerRadius,
             label = "QSTileIconCornerRadius",
         )

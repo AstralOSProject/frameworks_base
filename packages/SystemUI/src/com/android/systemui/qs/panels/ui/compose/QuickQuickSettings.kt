@@ -70,7 +70,7 @@ fun SceneScope.QuickQuickSettings(
             Tile(
                 tile = it.tile,
                 iconOnly = it.isIcon,
-                modifier = Modifier.element(it.tile.spec.toElementKey(spanIndex)),
+                modifier = Modifier.element(it.tile.spec.toElementKey()),
                 squishiness = { squishiness },
                 coroutineScope = scope,
                 bounceableInfo = bounceables.bounceableInfo(it, spanIndex, column, columns),
