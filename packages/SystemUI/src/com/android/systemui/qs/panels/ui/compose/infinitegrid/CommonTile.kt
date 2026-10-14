@@ -31,7 +31,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -187,6 +189,85 @@ fun LargeTileLabels(
                         Modifier.clearAndSetSemantics {}
                     },
             )
+        }
+    }
+}
+
+@Composable
+fun TallLargeTileContent(
+    label: String,
+    secondaryLabel: String?,
+    icon: Icon,
+    colors: TileColors,
+    toggleClick: (() -> Unit)?,
+    onLongClick: (() -> Unit)?,
+    accessibilityUiState: AccessibilityUiState? = null,
+) {
+    val longPressAccessibilityLabel = longPressLabel().takeIf { onLongClick != null }
+    Column(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(8.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.Start,
+    ) {
+        Box(
+            modifier =
+                Modifier.size(CommonTileDefaults.ToggleTargetSize)
+                    .clip(RoundedCornerShape(CommonTileDefaults.InactiveCornerRadius))
+                    .drawBehind { drawRect(colors.iconBackground) }
+                    .thenIf(toggleClick != null) {
+                        Modifier.combinedClickable(
+                                onClick = toggleClick!!,
+                                onLongClick = onLongClick,
+                                onLongClickLabel = longPressAccessibilityLabel,
+                                hapticFeedbackEnabled = !Flags.msdlFeedback(),
+                            )
+                            .thenIf(accessibilityUiState != null) {
+                                Modifier.semantics {
+                                    accessibilityUiState as AccessibilityUiState
+                                    contentDescription = accessibilityUiState.contentDescription
+                                    stateDescription = accessibilityUiState.stateDescription
+                                    accessibilityUiState.toggleableState?.let {
+                                        toggleableState = it
+                                    }
+                                    role = Role.Switch
+                                }
+                            }
+                            .sysuiResTag(TEST_TAG_TOGGLE)
+                    },
+            contentAlignment = Alignment.Center,
+        ) {
+            SmallTileContent(
+                icon = icon,
+                color = colors.icon,
+                size = { CommonTileDefaults.LargeTileIconSize },
+            )
+        }
+        val animatedLabelColor by animateColorAsState(colors.label, label = "QSTileLabelColor")
+        val animatedSecondaryLabelColor by
+            animateColorAsState(colors.secondaryLabel, label = "QSTileSecondaryLabelColor")
+        Column {
+            BasicText(
+                label,
+                style = MaterialTheme.typography.labelLarge,
+                color = { animatedLabelColor },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (!TextUtils.isEmpty(secondaryLabel)) {
+                BasicText(
+                    secondaryLabel ?: "",
+                    color = { animatedSecondaryLabelColor },
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier =
+                        Modifier.thenIf(
+                            accessibilityUiState?.stateDescription?.contains(secondaryLabel ?: "") ==
+                                true
+                        ) {
+                            Modifier.clearAndSetSemantics {}
+                        },
+                )
+            }
         }
     }
 }

@@ -39,6 +39,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,6 +99,7 @@ import com.android.compose.animation.scene.transitions
 import com.android.compose.modifiers.height
 import com.android.compose.modifiers.padding
 import com.android.compose.modifiers.thenIf
+import com.android.compose.theme.colorAttr
 import com.android.compose.theme.PlatformTheme
 import com.android.systemui.Dumpable
 import com.android.systemui.brightness.ui.compose.BrightnessSliderContainer
@@ -245,52 +247,57 @@ constructor(
     @Composable
     private fun Content() {
         PlatformTheme(isDarkTheme = true) {
-            ProvideShortcutHelperIndication(interactionsConfig = interactionsConfig()) {
-                AnimatedVisibility(
-                    visible = viewModel.isQsVisibleAndAnyShadeExpanded,
-                    modifier =
-                        Modifier.graphicsLayer { alpha = viewModel.viewAlpha }
-                            // Clipping before translation to match QSContainerImpl.onDraw
-                            .offset {
-                                IntOffset(x = 0, y = viewModel.viewTranslationY.fastRoundToInt())
-                            }
-                            .thenIf(notificationScrimClippingParams.isEnabled) {
-                                Modifier.notificationScrimClip {
-                                    notificationScrimClippingParams.params
+            QuickSettingsTheme {
+                ProvideShortcutHelperIndication(interactionsConfig = interactionsConfig()) {
+                    AnimatedVisibility(
+                        visible = viewModel.isQsVisibleAndAnyShadeExpanded,
+                        modifier =
+                            Modifier.graphicsLayer { alpha = viewModel.viewAlpha }
+                                // Clipping before translation to match QSContainerImpl.onDraw
+                                .offset {
+                                    IntOffset(
+                                        x = 0,
+                                        y = viewModel.viewTranslationY.fastRoundToInt(),
+                                    )
                                 }
+                                .thenIf(notificationScrimClippingParams.isEnabled) {
+                                    Modifier.notificationScrimClip {
+                                        notificationScrimClippingParams.params
+                                    }
+                                }
+                                // Disable touches in the whole composable while the mirror is showing.
+                                // While the mirror is showing, an ancestor of the ComposeView is
+                                // made alpha 0, but touches are still being captured by composables.
+                                .gesturesDisabled(viewModel.showingMirror),
+                    ) {
+                        val isEditing by
+                            viewModel.containerViewModel.editModeViewModel.isEditing
+                                .collectAsStateWithLifecycle()
+                        val animationSpecEditMode = tween<Float>(EDIT_MODE_TIME_MILLIS)
+                        AnimatedContent(
+                            targetState = isEditing,
+                            transitionSpec = {
+                                fadeIn(animationSpecEditMode) togetherWith
+                                    fadeOut(animationSpecEditMode)
+                            },
+                            label = "EditModeAnimatedContent",
+                        ) { editing ->
+                            if (editing) {
+                                val qqsPadding = viewModel.qqsHeaderHeight
+                                EditMode(
+                                    viewModel = viewModel.containerViewModel.editModeViewModel,
+                                    modifier =
+                                        Modifier.fillMaxWidth()
+                                            .padding(top = { qqsPadding })
+                                            .padding(
+                                                horizontal = {
+                                                    QuickSettingsShade.Dimensions.Padding.roundToPx()
+                                                }
+                                            ),
+                                )
+                            } else {
+                                CollapsableQuickSettingsSTL()
                             }
-                            // Disable touches in the whole composable while the mirror is showing.
-                            // While the mirror is showing, an ancestor of the ComposeView is made
-                            // alpha 0, but touches are still being captured by the composables.
-                            .gesturesDisabled(viewModel.showingMirror),
-                ) {
-                    val isEditing by
-                        viewModel.containerViewModel.editModeViewModel.isEditing
-                            .collectAsStateWithLifecycle()
-                    val animationSpecEditMode = tween<Float>(EDIT_MODE_TIME_MILLIS)
-                    AnimatedContent(
-                        targetState = isEditing,
-                        transitionSpec = {
-                            fadeIn(animationSpecEditMode) togetherWith
-                                fadeOut(animationSpecEditMode)
-                        },
-                        label = "EditModeAnimatedContent",
-                    ) { editing ->
-                        if (editing) {
-                            val qqsPadding = viewModel.qqsHeaderHeight
-                            EditMode(
-                                viewModel = viewModel.containerViewModel.editModeViewModel,
-                                modifier =
-                                    Modifier.fillMaxWidth()
-                                        .padding(top = { qqsPadding })
-                                        .padding(
-                                            horizontal = {
-                                                QuickSettingsShade.Dimensions.Padding.roundToPx()
-                                            }
-                                        ),
-                            )
-                        } else {
-                            CollapsableQuickSettingsSTL()
                         }
                     }
                 }
@@ -656,7 +663,7 @@ constructor(
             modifier =
                 Modifier.collapseExpandSemanticAction(
                     stringResource(id = R.string.accessibility_quick_settings_collapse)
-                )
+                ).background(colorAttr(R.attr.underSurface))
         ) {
             if (viewModel.isQsEnabled) {
                 Box(
@@ -746,15 +753,13 @@ constructor(
                         }
                     }
                 }
-                QuickSettingsTheme {
-                    FooterActions(
-                        viewModel = viewModel.footerActionsViewModel,
-                        qsVisibilityLifecycleOwner = this@QSFragmentCompose,
-                        modifier =
-                            Modifier.sysuiResTag(ResIdTags.qsFooterActions)
-                                .element(ElementKeys.FooterActions),
-                    )
-                }
+                FooterActions(
+                    viewModel = viewModel.footerActionsViewModel,
+                    qsVisibilityLifecycleOwner = this@QSFragmentCompose,
+                    modifier =
+                        Modifier.sysuiResTag(ResIdTags.qsFooterActions)
+                            .element(ElementKeys.FooterActions),
+                )
             }
         }
     }

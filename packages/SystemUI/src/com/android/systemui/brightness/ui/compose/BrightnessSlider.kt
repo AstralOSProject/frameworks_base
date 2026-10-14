@@ -51,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.android.app.tracing.coroutines.launchTraced as launch
 import com.android.compose.PlatformSlider
+import com.android.compose.PlatformSliderColors
+import com.android.compose.theme.colorAttr
 import com.android.compose.ui.graphics.drawInOverlay
 import com.android.systemui.Flags
 import com.android.systemui.brightness.shared.model.GammaBrightness
@@ -155,6 +157,18 @@ private fun BrightnessSlider(
             )
         },
         interactionSource = interactionSource,
+        colors =
+            PlatformSliderColors(
+                trackColor = colorAttr(R.attr.shadeInactive),
+                indicatorColor = colorAttr(R.attr.shadeActive),
+                iconColor = colorAttr(R.attr.onShadeActive),
+                labelColorOnIndicator = colorAttr(R.attr.onShadeActive),
+                labelColorOnTrack = colorAttr(R.attr.onShadeInactive),
+                disabledTrackColor = colorAttr(R.attr.shadeDisabled),
+                disabledIndicatorColor = colorAttr(R.attr.shadeDisabled),
+                disabledIconColor = colorAttr(R.attr.onShadeInactiveVariant),
+                disabledLabelColor = colorAttr(R.attr.onShadeInactiveVariant),
+            ),
     )
     // Showing the warning toast if the current running app window has controlled the
     // brightness value.

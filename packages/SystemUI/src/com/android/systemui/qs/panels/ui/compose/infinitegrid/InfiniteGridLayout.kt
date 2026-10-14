@@ -27,7 +27,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.android.compose.animation.scene.SceneScope
 import com.android.systemui.dagger.SysUISingleton
-import com.android.systemui.grid.ui.compose.VerticalSpannedGrid
+import com.android.systemui.grid.ui.compose.VerticalGridWithSpans
 import com.android.systemui.haptics.msdl.qs.TileHapticsViewModelFactoryProvider
 import com.android.systemui.lifecycle.rememberViewModel
 import com.android.systemui.media.controls.ui.controller.MediaHierarchyManager.Companion.LOCATION_QS
@@ -43,6 +43,7 @@ import com.android.systemui.qs.panels.ui.viewmodel.InfiniteGridViewModel
 import com.android.systemui.qs.panels.ui.viewmodel.TileViewModel
 import com.android.systemui.qs.pipeline.shared.TileSpec
 import com.android.systemui.qs.shared.ui.ElementKeys.toElementKey
+import com.android.systemui.qs.panels.ui.compose.infinitegrid.CommonTileDefaults.TileHeight
 import com.android.systemui.res.R
 import javax.inject.Inject
 
@@ -77,26 +78,43 @@ constructor(
             }
 
         val columns = columnsWithMediaViewModel.columns
+        val rowSpacing = dimensionResource(R.dimen.qs_tile_margin_vertical)
         val largeTilesSpan by iconTilesViewModel.largeTilesSpanState
         val sizedTiles = tiles.map { SizedTileImpl(it, it.spec.width(largeTilesSpan)) }
         val bounceables =
             remember(sizedTiles) { List(sizedTiles.size) { BounceableTileViewModel() } }
         val squishiness by viewModel.squishinessViewModel.squishiness.collectAsStateWithLifecycle()
         val scope = rememberCoroutineScope()
-        var cellIndex = 0
-
-        VerticalSpannedGrid(
+        val rowSpans =
+            sizedTiles.fastMap {
+                if (it.tile.spec == TileSpec.create("bt") &&
+                    !iconTilesViewModel.isIconTile(it.tile.spec)
+                ) {
+                    2
+                } else {
+                    1
+                }
+            }
+        VerticalGridWithSpans(
             columns = columns,
+            cellHeight = TileHeight,
             columnSpacing = dimensionResource(R.dimen.qs_tile_margin_horizontal),
-            rowSpacing = dimensionResource(R.dimen.qs_tile_margin_vertical),
-            spans = sizedTiles.fastMap { it.width },
-        ) { spanIndex ->
+            rowSpacing = rowSpacing,
+            columnSpans = sizedTiles.fastMap { it.width },
+            rowSpans = rowSpans,
+        ) { spanIndex, _, column ->
             val it = sizedTiles[spanIndex]
-            val column = cellIndex % columns
-            cellIndex += it.width
             Tile(
                 tile = it.tile,
                 iconOnly = iconTilesViewModel.isIconTile(it.tile.spec),
+                tileHeight =
+                    if (it.tile.spec == TileSpec.create("bt") &&
+                        !iconTilesViewModel.isIconTile(it.tile.spec)
+                    ) {
+                        TileHeight * 2 + rowSpacing
+                    } else {
+                        TileHeight
+                    },
                 modifier = Modifier.element(it.tile.spec.toElementKey(spanIndex)),
                 squishiness = { squishiness },
                 tileHapticsViewModelFactoryProvider = tileHapticsViewModelFactoryProvider,

@@ -29,9 +29,8 @@ interface DefaultLargeTilesRepository {
 class DefaultLargeTilesRepositoryImpl @Inject constructor() : DefaultLargeTilesRepository {
     override val defaultLargeTiles =
         setOf(
+            TileSpec.create("wifi"),
             TileSpec.create("internet"),
             TileSpec.create("bt"),
-            TileSpec.create("dnd"),
-            TileSpec.create("cast"),
         )
 }

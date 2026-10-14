@@ -117,6 +117,122 @@ fun VerticalSpannedGrid(
 }
 
 @Composable
+fun VerticalGridWithSpans(
+    columns: Int,
+    cellHeight: Dp,
+    columnSpacing: Dp,
+    rowSpacing: Dp,
+    columnSpans: List<Int>,
+    rowSpans: List<Int>,
+    modifier: Modifier = Modifier,
+    composables: @Composable BoxScope.(index: Int, row: Int, column: Int) -> Unit,
+) {
+    check(columns > 0)
+    check(columnSpans.size == rowSpans.size)
+    columnSpans.forEachIndexed { index, span ->
+        check(span in 1..columns) { "Column span at index $index is out of bounds: $span" }
+        check(rowSpans[index] > 0) { "Row span at index $index must be positive" }
+    }
+
+    val placements = remember(columns, columnSpans, rowSpans) {
+        val occupied = mutableListOf<MutableList<Boolean>>()
+        columnSpans.indices.map { index ->
+            val columnSpan = columnSpans[index]
+            val rowSpan = rowSpans[index]
+            var row = 0
+            var column = 0
+            while (true) {
+                while (occupied.size < row + rowSpan) {
+                    occupied.add(MutableList(columns) { false })
+                }
+                column = 0
+                var found = false
+                while (column + columnSpan <= columns && !found) {
+                    found = (row until row + rowSpan).all { checkRow ->
+                        (column until column + columnSpan).none { occupied[checkRow][it] }
+                    }
+                    if (!found) column++
+                }
+                if (found) break
+                row++
+            }
+            for (occupiedRow in row until row + rowSpan) {
+                for (occupiedColumn in column until column + columnSpan) {
+                    occupied[occupiedRow][occupiedColumn] = true
+                }
+            }
+            SpannedGridPlacement(row, column, rowSpan, columnSpan)
+        }
+    }
+    val rowCount = placements.maxOfOrNull { it.row + it.rowSpan } ?: 0
+
+    Layout(
+        {
+            placements.forEachIndexed { index, placement ->
+                Box(
+                    Modifier.semantics {
+                        collectionItemInfo =
+                            CollectionItemInfo(
+                                placement.row,
+                                placement.rowSpan,
+                                placement.column,
+                                placement.columnSpan,
+                            )
+                    }
+                ) {
+                    composables(index, placement.row, placement.column)
+                }
+            }
+        },
+        modifier.semantics { collectionInfo = CollectionInfo(rowCount, columns) },
+    ) { measurables, constraints ->
+        check(measurables.size == placements.size)
+        val width = constraints.maxWidth
+        check(width != Constraints.Infinity) { "Width must be constrained" }
+        val cellWidths = IntArray(columns)
+        val cellPositions = IntArray(columns)
+        calculateCellsCrossAxisSize(width, columns, columnSpacing.roundToPx(), cellWidths)
+        with(Arrangement.spacedBy(columnSpacing)) {
+            arrange(width, cellWidths, LayoutDirection.Ltr, cellPositions)
+        }
+
+        val cellHeightPx = cellHeight.roundToPx()
+        val rowSpacingPx = rowSpacing.roundToPx()
+        val placeables = measurables.mapIndexed { index, measurable ->
+            val placement = placements[index]
+            val right = placement.column + placement.columnSpan - 1
+            val tileWidth =
+                (cellPositions[right] + cellWidths[right] - cellPositions[placement.column])
+                    .coerceAtLeast(0)
+            val tileHeight =
+                cellHeightPx * placement.rowSpan + rowSpacingPx * (placement.rowSpan - 1)
+            measurable.measure(Constraints.fixed(tileWidth, tileHeight))
+        }
+        val contentHeight =
+            (rowCount * cellHeightPx + (rowCount - 1).coerceAtLeast(0) * rowSpacingPx)
+                .coerceAtLeast(0)
+        val layoutHeight = contentHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
+
+        layout(width, layoutHeight) {
+            placeables.forEachIndexed { index, placeable ->
+                val placement = placements[index]
+                placeable.placeRelative(
+                    cellPositions[placement.column],
+                    placement.row * (cellHeightPx + rowSpacingPx),
+                )
+            }
+        }
+    }
+}
+
+private data class SpannedGridPlacement(
+    val row: Int,
+    val column: Int,
+    val rowSpan: Int,
+    val columnSpan: Int,
+)
+
+@Composable
 private fun SpannedGrid(
     primarySpaces: Int,
     crossAxisSpacing: Dp,
