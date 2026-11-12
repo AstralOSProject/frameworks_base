@@ -45,7 +45,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -203,7 +202,7 @@ private fun Modifier.sliderBackground(color: Color) = drawWithCache {
 fun BrightnessSliderContainer(
     viewModel: BrightnessSliderViewModel,
     modifier: Modifier = Modifier,
-    containerColor: Color = colorResource(R.color.shade_scrim_background_dark),
+    containerColor: Color = Color.Transparent,
 ) {
     val gamma = viewModel.currentBrightness.value
     val coroutineScope = rememberCoroutineScope()

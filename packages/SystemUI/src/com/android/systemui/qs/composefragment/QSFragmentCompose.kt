@@ -39,7 +39,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -99,7 +98,6 @@ import com.android.compose.animation.scene.transitions
 import com.android.compose.modifiers.height
 import com.android.compose.modifiers.padding
 import com.android.compose.modifiers.thenIf
-import com.android.compose.theme.colorAttr
 import com.android.compose.theme.PlatformTheme
 import com.android.systemui.Dumpable
 import com.android.systemui.brightness.ui.compose.BrightnessSliderContainer
@@ -663,7 +661,7 @@ constructor(
             modifier =
                 Modifier.collapseExpandSemanticAction(
                     stringResource(id = R.string.accessibility_quick_settings_collapse)
-                ).background(colorAttr(R.attr.underSurface))
+                )
         ) {
             if (viewModel.isQsEnabled) {
                 Box(
